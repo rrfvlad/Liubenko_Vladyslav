@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX Запит до API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список Email користувачів</h1>
+    <button id="loadUsers">Завантажити Email</button>
+    <ul id="userList"></ul>
+    <p id="error" style="color: red;"></p>
+
+    <script>
+        document.getElementById('loadUsers').addEventListener('click', function() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://fakestoreapi.com/users', true);
+            
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const users = JSON.parse(xhr.responseText);
+                        const userList = document.getElementById('userList');
+                        userList.innerHTML = '';
+                        users.forEach(user => {
+                            const li = document.createElement('li');
+                            li.textContent = user.email;
+                            userList.appendChild(li);
+                        });
+                        document.getElementById('error').textContent = '';
+                    } catch (e) {
+                        document.getElementById('error').textContent = 'Помилка обробки даних';
+                    }
+                } else {
+                    document.getElementById('error').textContent = 'Помилка отримання даних. Код: ' + xhr.status;
+                }
+            };
+            
+            xhr.onerror = function() {
+                document.getElementById('error').textContent = 'Помилка мережі. Спробуйте ще раз.';
+            };
+            
+            xhr.send();
+        });
+    </script>
+</body>
+</html>
